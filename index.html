@@ -186,6 +186,109 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/10/var%E5%92%8Clet%E7%9A%84%E5%8C%BA%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JCole_1997">
+      <meta itemprop="description" content="Nameless">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Solace">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/10/var%E5%92%8Clet%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">var和let的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-10 23:38:15" itemprop="dateCreated datePublished" datetime="2020-07-10T23:38:15+08:00">2020-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-11 23:04:11" itemprop="dateModified" datetime="2020-07-11T23:04:11+08:00">2020-07-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="“var”的缺陷"><a href="#“var”的缺陷" class="headerlink" title="“var”的缺陷"></a>“var”的缺陷</h1><p>在初学JS时，我们就会接触到变量的定义，不同于JAVA这样的静态类型语言，JS只需要通过<code>var</code>便可以声明不同类型的变量。在ES6中又新引入了<code>let\const</code>两种方式来声明变量，表面上<code>var</code>和<code>let</code>的行为都是声明变量，但它们存在区别。</p>
+<h2 id="“var”没有块级作用域"><a href="#“var”没有块级作用域" class="headerlink" title="“var”没有块级作用域"></a>“var”没有块级作用域</h2><p>使用<code>var</code>声明的变量不是<em>全局作用域</em>就是<em>函数作用域</em>，而当一个变量在代码块内声明时，“var”会忽略代码块，此时的变量就成了全局变量。</p>
+<p>举个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> test = <span class="literal">true</span>; <span class="comment">// 使用 "var" 而不是 "let"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">alert(test); <span class="comment">// true，变量在 if 结束后仍存在</span></span><br></pre></td></tr></table></figure>
+
+<p>因此，会带来一个问题–内层变量可能覆盖外层变量</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tmp = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(tmp); <span class="comment">// 想打印外层的时间</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> tmp = <span class="string">'hello world'</span>; <span class="comment">// 这里声明的作用域为整个函数</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">f(); <span class="comment">// undefined</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;第一次看到这段代码时，很多初学者会十分疑惑，为什么最后输出的变量<code>tmp</code>是<code>undefined</code>。在这里需要引入一个概念就是<strong>变量提升</strong>。<br>&emsp;&emsp;具体内容就是：<strong>程序正式执行之前，会将<code>var</code>声明的变量和<code>function</code>声明的函数预读到当前作用域的顶部，但赋值会保留在原位置，在赋值之前变量的值是<code>undefined</code></strong>。同样当函数开始的时候，<code>var</code>声明的变量会在函数开头被定义。<br>&emsp;&emsp;在上面这个例子当中，由于<code>var</code>声明的变量没有块级作用域(<code>if</code>条件语句判断下的内容即是一个代码块)，<code>var tmp = &#39;hello world&#39;</code>声明的变量会被提前至函数开头并覆盖掉了函数外声明的全局变量<code>tmp</code>。声明会被提升，但是赋值不会，<code>tmp</code>此时的值即为<code>undefined</code>。这与我们原本想获取的时间大相径庭。</p>
+<hr>
+<h1 id="“let”的出现"><a href="#“let”的出现" class="headerlink" title="“let”的出现"></a>“let”的出现</h1><h2 id="块级作用域"><a href="#块级作用域" class="headerlink" title="块级作用域"></a>块级作用域</h2><p>为了解决上述问题，ES6新增了<code>let</code>命令，它和<code>var</code>一样用于申明变量，但是声明的变量只在<code>let</code>命令所在的代码块内生效。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> n = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> n = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">console</span>.log(n); <span class="comment">// 10</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">console</span>.log(n); <span class="comment">// 10 if代码块内赋值覆盖掉了外层</span></span><br><span class="line">&#125;</span><br><span class="line">f1()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f1</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> n = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> n = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">console</span>.log(n); <span class="comment">// 10</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">console</span>.log(n); <span class="comment">// 5 代码块内外赋值分开</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有声明循环计数器<code>i</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(i);</span><br><span class="line"><span class="comment">// Uncaught ReferenceError: i is not defined</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="不存在变量提升"><a href="#不存在变量提升" class="headerlink" title="不存在变量提升"></a>不存在变量提升</h2><p>不同于使用<code>var</code>，<code>let</code>声明的变量一定要在声明后使用，否则会报错。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// var 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(foo); <span class="comment">// 输出undefined</span></span><br><span class="line"><span class="keyword">var</span> foo = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// let 的情况</span></span><br><span class="line"><span class="built_in">console</span>.log(bar); <span class="comment">// 报错ReferenceError</span></span><br><span class="line"><span class="keyword">let</span> bar = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="暂时性死区"><a href="#暂时性死区" class="headerlink" title="暂时性死区"></a>暂时性死区</h2><p>一旦在块级作用域内使用<code>let</code>命令声明变量之前，该变量都是不可用的，这种情况被称之为“暂时性死区”(temporal dead zone)。<br>我们可以结合上一个特点一起理解，也就是要注意一定要在<code>let</code>声明变量后再使用。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> tmp = <span class="number">123</span>; <span class="comment">// 声明全局变量tmp</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">  tmp = <span class="string">'abc'</span>; <span class="comment">// ReferenceError</span></span><br><span class="line">  <span class="keyword">let</span> tmp; <span class="comment">// let声明局部变量tmp绑定此代码块</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不允许重复声明"><a href="#不允许重复声明" class="headerlink" title="不允许重复声明"></a>不允许重复声明</h2><p><code>let</code>不允许在相同作用域内，重复声明同一个变量。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//未报错</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> a = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 报错</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> a = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 报错</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">func</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> a = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">let</span> a = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="顶层对象属性"><a href="#顶层对象属性" class="headerlink" title="顶层对象属性"></a>顶层对象属性</h2><p>在ES5中，顶层对象的属性与全局变量(使用<code>var</code>声明的变量)是等价的。而ES6改变了这一点，规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 如果在 Node 的 REPL 环境，可以写成 global.a</span></span><br><span class="line"><span class="comment">// 或者采用通用方法，写成 this.a</span></span><br><span class="line"><span class="built_in">window</span>.a <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> b = <span class="number">1</span>;</span><br><span class="line"><span class="built_in">window</span>.b <span class="comment">// undefined</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>总的来说，现在编写JS代码时，应当减少有缺陷的<code>var</code>而使用更加“安全”的<code>let</code>进行变量的声明，它为我们提供了更为精细的作用域。当然如果你需要一个变量拥有整个函数作用域，在特定情况下<code>var</code>还是有一定的用武之地。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -217,7 +320,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-10 00:17:51" itemprop="dateModified" datetime="2020-07-10T00:17:51+08:00">2020-07-10</time>
+                <time title="修改时间：2020-07-10 16:47:16" itemprop="dateModified" datetime="2020-07-10T16:47:16+08:00">2020-07-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,9 +382,17 @@
 <p>2.</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> postorderTraversal = <span class="function"><span class="keyword">function</span>(<span class="params">root</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!root) <span class="keyword">return</span> [];</span><br><span class="line">    <span class="keyword">let</span> res = [];</span><br><span class="line">    <span class="keyword">const</span> postorderTraversalHelper = <span class="function">(<span class="params">node</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(!node) <span class="keyword">return</span>;</span><br><span class="line">        postorderTraversalHelper(node.left);</span><br><span class="line">        postorderTraversalHelper(node.right);</span><br><span class="line">        res.push(node.val);</span><br><span class="line">    &#125;</span><br><span class="line">    postorderTraversalHelper(root);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<h2 id="迭代-2"><a href="#迭代-2" class="headerlink" title="迭代"></a>迭代</h2><blockquote>
-</blockquote>
+<h2 id="迭代-2"><a href="#迭代-2" class="headerlink" title="迭代"></a>迭代</h2><p>二叉树的后序遍历有一个十分巧妙的办法<br><em>前序</em>遍历的访问顺序为<strong>根&gt;左&gt;右</strong><br><em>后序</em>遍历的访问顺序为<strong>左&gt;右&gt;根</strong></p>
+<p>如果此时将<em>前序</em>遍历结果逆序(push -&gt; unshift)，那么输出结果则是<strong>右&gt;左&gt;根</strong><br>此时只需调整<strong>左右</strong>子树的入栈顺序便可得到<em>后序</em>遍历的<strong>左&gt;右&gt;根</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> postorderTraversal = <span class="function"><span class="keyword">function</span>(<span class="params">root</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!root) <span class="keyword">return</span> [];</span><br><span class="line">    <span class="keyword">let</span> res = [], stack = [];</span><br><span class="line">    stack.push(root);</span><br><span class="line">    <span class="keyword">while</span>(stack.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> node = stack.pop();</span><br><span class="line">        res.unshift(node.val);</span><br><span class="line"></span><br><span class="line">        node.left &amp;&amp; stack.push(node.left);</span><br><span class="line">        node.right &amp;&amp; stack.push(node.right);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
+<h1 id="二叉树的层次遍历"><a href="#二叉树的层次遍历" class="headerlink" title="二叉树的层次遍历"></a>二叉树的层次遍历</h1><blockquote>
+<p><a href="https://leetcode-cn.com/problems/binary-tree-level-order-traversal/" target="_blank" rel="noopener">leetcode-102</a></p>
+</blockquote>
+<h1 id="BFS"><a href="#BFS" class="headerlink" title="BFS"></a>BFS</h1><p>二叉树的层次遍历通常使用<strong>BFS</strong>(宽度优先搜索)的方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> levelOrder = <span class="function"><span class="keyword">function</span>(<span class="params">root</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = [];</span><br><span class="line">    <span class="keyword">if</span>(!root) <span class="keyword">return</span> res;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> queue = [];</span><br><span class="line">    queue.push(root);</span><br><span class="line">    <span class="keyword">while</span> (queue.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">//获取队列长度，即二叉树当前层次结点个数</span></span><br><span class="line">        <span class="keyword">let</span> queueLength = queue.length;</span><br><span class="line">        <span class="comment">//本题输出为二维数组，每层结点构成一个一维数组</span></span><br><span class="line">        res.push([]);</span><br><span class="line">        <span class="comment">//for循环当前层数的所有结点，并将它们的子结点按照先左后右的方式入队列</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; queueLength; i++) &#123;</span><br><span class="line">            <span class="comment">//队列的先入先出</span></span><br><span class="line">            <span class="keyword">const</span> node = queue.shift();</span><br><span class="line">            res[res.length - <span class="number">1</span>].push(node.val);</span><br><span class="line">            </span><br><span class="line">            node.left &amp;&amp; queue.push(node.left);</span><br><span class="line">            node.right &amp;&amp; queue.push(node.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="递归-3"><a href="#递归-3" class="headerlink" title="递归"></a>递归</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> levelOrder = <span class="function"><span class="keyword">function</span>(<span class="params">root</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> res = []</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">levelOrderHelper</span>(<span class="params">root, depth</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!res[depth]) &#123;</span><br><span class="line">            res[depth] = []</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        res[depth].push(root.val);</span><br><span class="line">        levelOrderHelper(root.left, depth + <span class="number">1</span>)</span><br><span class="line">        levelOrderHelper(root.right, depth + <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  levelOrderHelper(root, <span class="number">0</span>)</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -362,20 +473,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
